@@ -1,0 +1,17 @@
+Package: scpImaging
+Title: Functions for handling cellenONE-based imaging data for single-cell experiments
+Version: 0.1.0.0
+Authors@R: 
+    person("Edward", "Emmott", , "e.emmott@liverpool.ac.uk", role = c("aut", "cre"))
+Description: This package includes functions for curating, manipulating, and visualising
+    cellenONE-based imaging data for single-cell experiments. It is designed to
+    work with microscopy images and associated metadata produced the cellenONE platform, 
+    which is a high-throughput imaging and handling system for single-cell analysis. It contains
+    functions to process the initial images for downstream analysis in cellPose and cellProfiler, as well 
+    as for importing and processing the data output from this pipelines. It also contains a 
+    module for interactive visualisation of cellenONE-based images using the iSEE package for 
+    interactive single-cell experiment exploration.
+License: `use_mit_license()`
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
