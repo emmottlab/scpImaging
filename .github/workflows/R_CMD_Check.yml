@@ -31,6 +31,24 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+  - uses: actions/checkout@v2
+
+  - name: Setup Cache
+    uses: actions/cache@v4
+    with:
+      path: ~/.cache
+      key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ hashFiles('**/DESCRIPTION') }}
+      restore-keys: |
+        ${{ runner.os }}-r-${{ matrix.config.r }}-
+        ${{ runner.os }}-r-
+
+  - uses: r-lib/actions/setup-pandoc@v1
+  - uses: r-lib/actions/setup-r@v1
+    with:
+      r-version: ${{ matrix.config.r }}
+      http-user-agent: ${{ matrix.config.http-user-agent }}
+      use-public-rspm: true
+  ...
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-pandoc@v1
