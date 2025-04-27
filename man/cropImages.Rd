@@ -2,7 +2,7 @@
 % Please edit documentation in R/imageProcessing.R
 \name{cropImages}
 \alias{cropImages}
-\title{cropImages}
+\title{'cropImages()' generates cropped images from a data frame of image paths and XY coordinates}
 \usage{
 cropImages(
   df,
@@ -54,5 +54,9 @@ cropped image files to the specified \code{output_dir}.
 Reads images specified in a data frame, crops them based on a user-defined
 offset centred on user-provided pixel coordinates, and saves the cropped images to a specified
 output directory. Allows specifying a base input directory if image paths
-in the data frame are relative filenames.
+in the data frame are relative filenames. For the intended use case, the dataframe
+represents the cellenONE cell sorting output file containing cell metadata and image names,
+the images are the images recorded for each sorted cell, and the XY coordinates represent
+the location of the cell in the image. The function crops a square region surrounding the cell
+of interest, with the size of the square determined by the pixel offset.
 }

@@ -1,12 +1,17 @@
-### Functions for processing cellenONE images, and overlaying masks produced by cellProfiler onto these images
+### Functions for processing cellenONE images, and overlaying masks produced by cellpose onto these images
 
 ##############################################################################################################
-#' cropImages
+
+#' 'cropImages()' generates cropped images from a data frame of image paths and XY coordinates
 #'
 #' Reads images specified in a data frame, crops them based on a user-defined
 #' offset centred on user-provided pixel coordinates, and saves the cropped images to a specified
 #' output directory. Allows specifying a base input directory if image paths
-#' in the data frame are relative filenames.
+#' in the data frame are relative filenames. For the intended use case, the dataframe
+#' represents the cellenONE cell sorting output file containing cell metadata and image names,
+#' the images are the images recorded for each sorted cell, and the XY coordinates represent
+#' the location of the cell in the image. The function crops a square region surrounding the cell
+#' of interest, with the size of the square determined by the pixel offset.
 #'
 #' @param df A data frame containing image processing information. **Required.**
 #'   Must include columns: `image_path` (character, full path to the input image
@@ -167,5 +172,12 @@ cropImages <- function(df, pixel_offset, output_dir, input_dir = NULL, output_pr
 
   invisible(NULL)
 }
+
+##############################################################################################################
+
+# In progress
+# function: generate .png from .npy
+# function: overlay mask
+# function: overlay outline
 
 ##############################################################################################################
