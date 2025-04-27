@@ -16,9 +16,11 @@ install_github("emmottlab/scpImaging")
 ## General use cases:
 This R package has functions for cropping cellenONE images based on the instrument metadata to allow for straightforward downstream processing in cellpose. It has functions to allow generation of masked images highlighting identified cells or cell outlines.
 
-It also has functions for calculating cell numbers isolated from cellpose mask files (i.e. singlet/doublet/multiplet detection) and incorporating this into dataframes of QFeatures objects. 
+It also has functions for calculating cell numbers isolated from cellpose mask files (i.e. singlet/doublet/multiplet detection) and incorporating this into dataframes or QFeatures objects. It can also produce a report, for use cases that cover cell line development. 
 
 Lastly the package includes a custom iSEE panel class, to permit visualisation of cellenONE images as part of interactive single-cell experiment data exploration using the iSEE package.
+
+The package has been designed to work with the [`scp`](https://www.bioconductor.org/packages/release/bioc/html/scp.html) and [`iSEE`](https://bioconductor.org/packages/release/bioc/html/iSEE.html) packages and most use cases will be in conjunction with these packages.
 
 ## Vignettes
 On their way...
