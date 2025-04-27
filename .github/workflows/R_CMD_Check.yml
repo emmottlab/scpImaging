@@ -1,4 +1,4 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/master/examples
+ # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 
 # Workflow: https://github.com/r-lib/actions/tree/old/examples#standard-ci-workflow
@@ -22,9 +22,9 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu 24,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu 24,   r: 'release'}
+          - {os: ubuntu 24,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
