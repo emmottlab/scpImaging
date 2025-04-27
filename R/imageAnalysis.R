@@ -9,3 +9,6 @@
 
 # Function: integrate CellProfiler output into annotation dataframe
 # Function: integrate CellProfiler output tables into QFeatures object
+
+# Function: generate report based on cellenONE images and cellpose data highlighting singlets and potential doublets/multiplets
+
