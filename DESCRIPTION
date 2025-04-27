@@ -12,7 +12,7 @@ Description: This package includes functions for curating, manipulating, and vis
     module for interactive visualisation of cellenONE-based images using the iSEE package for 
     interactive single-cell experiment exploration.
 Imports:
-    magick
+    magick, reticulate
 License: MIT License + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
