@@ -2,13 +2,16 @@
 % Please edit documentation in R/imageProcessing.R
 \name{overlayMask}
 \alias{overlayMask}
-\title{'overlayMask()' Overlay Segmentation Mask on Image}
+\title{Overlay Segmentation Mask on Image (Single File or Directory)}
 \usage{
 overlayMask(
-  image_path,
-  mask_path,
-  output_path,
+  image_input,
+  mask_input,
+  output_target,
   mode = c("outline", "overlay"),
+  image_suffix = NULL,
+  mask_suffix = "_cp_masks.png",
+  output_suffix = "_cp_masks_overlay.png",
   outline_col = "cyan",
   outline_lwd = 2,
   overlay_col = "yellow",
@@ -16,18 +19,35 @@ overlayMask(
 )
 }
 \arguments{
-\item{image_path}{Path to the original microscopy image (*.png).}
+\item{image_input}{Path to the original microscopy image file OR a directory
+containing multiple image files.}
 
-\item{mask_path}{Path to the segmentation mask image (*.png).
-Expected to be binary or label image where background is black (intensity 0)
-and segmented regions are non-black.}
+\item{mask_input}{Path to the segmentation mask image file OR a directory
+containing multiple mask files. If \code{image_input} is a directory, \code{mask_input}
+can be the same directory or a separate one.}
 
-\item{output_path}{Path to save the resulting composite image (PNG format).}
+\item{output_target}{Path to save the resulting composite image file OR a
+directory where multiple output images will be saved. If inputs are
+directories, this must be a directory path.}
 
-\item{mode}{Character string: "outline" or "overlay". Determines the visualization style.}
+\item{mode}{Character string: "outline" or "overlay". Determines the
+visualization style. Default is "outline".}
+
+\item{image_suffix}{Character string or NULL. Suffix used to identify image
+files when \code{image_input} is a directory. Required if \code{image_input} and
+\code{mask_input} point to the same directory. Example: \code{"_Run.png"}. If NULL
+and separate directories are used, attempts to match common image extensions.
+Default is NULL.}
+
+\item{mask_suffix}{Character string. Suffix used to identify mask files when
+\code{mask_input} (or \code{image_input}) is a directory. Default is \code{"_cp_masks.png"}.}
+
+\item{output_suffix}{Character string. Suffix used for the generated output
+files. The mask file's \code{mask_suffix} will be replaced with this.
+Default is \code{"_cp_masks_overlay.png"}.}
 
 \item{outline_col}{Color for the outlines (used if mode="outline"). Can be any
-format recognized by \code{magick} (e.g., "cyan", "#00FFFF"). Default is "cyan".}
+format recognized by \code{magick}. Default is "cyan".}
 
 \item{outline_lwd}{Approximate line width (thickness) for outlines in pixels
 (used if mode="outline"). Default is 2.}
@@ -39,51 +59,73 @@ format recognized by \code{magick}. Default is "yellow".}
 A numeric value between 0 (fully transparent) and 1 (fully opaque). Default is 0.4.}
 }
 \value{
-Invisibly returns the \code{output_path} where the composite image was saved.
+Invisibly returns a list of paths to the successfully created output files.
 }
 \description{
-Reads a microscopy image and a corresponding segmentation mask,
-then creates an output image showing the mask as either outlines or a
-semi-transparent overlay on the original image.
+Reads a microscopy image and a corresponding segmentation mask
+(or directories containing multiple images/masks), then creates an output
+image (or images) showing the mask as either outlines or a semi-transparent
+overlay on the original image. Uses the 'magick' package. Console output
+is minimized, primarily showing warnings for missing files or processing errors.
 }
 \examples{
 \dontrun{
-# Requires the 'magick' package
+# --- Setup Dummy Files/Dirs ---
 if (requireNamespace("magick", quietly = TRUE)) {
-  # Create dummy files for example
-  img <- magick::image_blank(width=100, height=100, color="grey")
-  mask <- magick::image_blank(width=100, height=100, color="black")
+# Create temp directories
+temp_dir <- tempdir()
+img_dir <- file.path(temp_dir, "images")
+mask_dir <- file.path(temp_dir, "masks")
+out_dir <- file.path(temp_dir, "output")
+dir.create(img_dir, showWarnings = FALSE)
+dir.create(mask_dir, showWarnings = FALSE)
+dir.create(out_dir, showWarnings = FALSE)
 
-  # Draw a white circle on the mask using magick's drawing capabilities
-  mask <- magick::image_draw(mask)
-  graphics::symbols(50, 50, circles=25, inches=FALSE, add=TRUE, fg="white", bg="white")
-  grDevices::dev.off() # Close the drawing device opened by image_draw
+# Create dummy image/mask files (1 pair)
+img_base1 <- "cell_image_A1"
+img_suffix <- "_microscopy.png"
+mask_suffix <- "_seg_mask.png"
+img_path1 <- file.path(img_dir, paste0(img_base1, img_suffix))
+mask_path1 <- file.path(mask_dir, paste0(img_base1, mask_suffix))
 
-  img_path <- tempfile(fileext = ".png")
-  mask_path <- tempfile(fileext = ".png")
-  out_outline <- tempfile(fileext = ".png")
-  out_overlay <- tempfile(fileext = ".png")
+img <- magick::image_blank(width=50, height=50, color="grey")
+mask <- magick::image_blank(width=50, height=50, color="black")
+mask <- magick::image_draw(mask)
+graphics::symbols(25, 25, circles=10, inches=FALSE, add=TRUE, fg="white", bg="white")
+grDevices::dev.off()
+magick::image_write(img, img_path1)
+magick::image_write(mask, mask_path1)
 
-  magick::image_write(img, img_path)
-  magick::image_write(mask, mask_path)
+# Create an image file without a corresponding mask
+img_base_unmatched <- "unmatched_image"
+img_path_unmatched <- file.path(img_dir, paste0(img_base_unmatched, img_suffix))
+magick::image_write(img, img_path_unmatched)
 
-  # Generate outline version
-  overlayMask(img_path, mask_path, out_outline, mode = "outline",
-               outline_col = "lime", outline_lwd = 3)
-  print(paste("Outline image saved to:", out_outline))
+# Create a mask file without a corresponding image
+mask_base_unmatched <- "unmatched_mask"
+mask_path_unmatched <- file.path(mask_dir, paste0(mask_base_unmatched, mask_suffix))
+magick::image_write(mask, mask_path_unmatched)
 
-  # Generate overlay version
-  overlayMask(img_path, mask_path, out_overlay, mode = "overlay",
-               overlay_col="magenta", overlay_alpha = 0.6)
-  print(paste("Overlay image saved to:", out_overlay))
+# --- Example 1: Single File Mode (should be quiet) ---
+out_single_file <- file.path(out_dir, "single_overlay.png")
+overlayMask(img_path1, mask_path1, out_single_file, mode = "overlay")
 
-  # Optional: View the first image if running interactively
-  # if(interactive()) print(magick::image_read(out_outline))
+# --- Example 2: Directory Mode (should warn about unmatched files) ---
+overlayMask(image_input = img_dir,
+mask_input = mask_dir,
+output_target = out_dir,
+mode = "outline",
+image_suffix = img_suffix, # Specify suffixes
+mask_suffix = mask_suffix,
+output_suffix = "_outline_overlay.png",
+outline_col = "red")
 
-  # Clean up temporary files
-  file.remove(img_path, mask_path, out_outline, out_overlay)
+# --- Clean up ---
+unlink(img_dir, recursive = TRUE)
+unlink(mask_dir, recursive = TRUE)
+unlink(out_dir, recursive = TRUE)
 } else {
-  message("Magick package not installed. Example cannot run.")
+message("Magick package not installed. Examples cannot run.")
 }
 }
 }
