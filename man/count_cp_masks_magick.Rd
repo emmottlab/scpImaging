@@ -25,7 +25,7 @@ the filename. Defaults to \code{".png"}. Ignored if \code{filelist} is provided.
 
 \item{expected_bit_depth}{A numeric value indicating the expected bit depth
 of the original PNG mask files (typically 8 or 16). This is used to
-interpret the raw pixel data correctly. Defaults to 16.}
+interpret the raw pixel data correctly. Defaults to 8.}
 }
 \value{
 A dataframe with two columns:

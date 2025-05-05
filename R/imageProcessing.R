@@ -828,7 +828,7 @@ overlayMask <- function(image_input,
 #' @param mask_suffix Character string. Suffix appended to the `Image_File`
 #' value to find mask files. Default is `"_cp_masks.png"`.
 #' @param output_suffix Character string. Suffix appended to the `Image_File`
-#' value for the generated output files. Default is `"_overlayed.png"`.
+#' value for the generated output files. Default is `"_parent_overlayed.png"`.
 #' @param outline_col Color for the outlines (used if mode="outline"). Default is "cyan".
 #' @param outline_lwd Approximate line width (thickness) for outlines in pixels
 #' (used if mode="outline"). Default is 2.
@@ -986,7 +986,7 @@ overlayMaskOnParent <- function(parent_image_input,
                                 mode = c("outline", "overlay"),
                                 parent_image_suffix = "_Run.png",
                                 mask_suffix = "_cp_masks.png",
-                                output_suffix = "_overlayed.png",
+                                output_suffix = "_parent_overlayed.png",
                                 outline_col = "cyan",
                                 outline_lwd = 2,
                                 overlay_col = "yellow",

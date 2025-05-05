@@ -12,7 +12,7 @@ overlayMaskOnParent(
   mode = c("outline", "overlay"),
   parent_image_suffix = "_Run.png",
   mask_suffix = "_cp_masks.png",
-  output_suffix = "_overlayed.png",
+  output_suffix = "_parent_overlayed.png",
   outline_col = "cyan",
   outline_lwd = 2,
   overlay_col = "yellow",
@@ -43,7 +43,7 @@ value to find parent image files. Default is \code{"_Run.png"}.}
 value to find mask files. Default is \code{"_cp_masks.png"}.}
 
 \item{output_suffix}{Character string. Suffix appended to the \code{Image_File}
-value for the generated output files. Default is \code{"_overlayed.png"}.}
+value for the generated output files. Default is \code{"_parent_overlayed.png"}.}
 
 \item{outline_col}{Color for the outlines (used if mode="outline"). Default is "cyan".}
 
