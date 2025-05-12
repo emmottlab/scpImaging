@@ -2,9 +2,7 @@
 
 # 1. generateImageColumns() status: functional
 # 2. generateImageColumnsSCE() status: untested but present - wrapper for the above to add these columns to the colData of a singlecellexperiment object
-# 3. addCellprofilerToDF() status: non-existant
-# 4. addCellprofilerToSCE() status: non-existant - wrapped for the above to add these columns to the colData of a singlecellexperiment object
-# 5. cleanFilenames(): status: non-existant - removes =hyperlink(" and ") from filenames.
+# 3. cleanFilenames(): status: non-existant - removes =hyperlink(" and ") from filenames.
 
 ###################################################################################################
 #' generateImageColumns(): Generate Derived Image File Columns
