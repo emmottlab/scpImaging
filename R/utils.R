@@ -4,7 +4,7 @@
 # 2. generateImageColumnsSCE() status: untested but present - wrapper for the above to add these columns to the colData of a singlecellexperiment object
 # 3. addCellprofilerToDF() status: non-existant
 # 4. addCellprofilerToSCE() status: non-existant - wrapped for the above to add these columns to the colData of a singlecellexperiment object
-# 5. cleanFileNames(): status: non-existant - removes =hyperlink(" and ") from filenames.
+# 5. cleanFilenames(): status: non-existant - removes =hyperlink(" and ") from filenames.
 
 ###################################################################################################
 #' generateImageColumns(): Generate Derived Image File Columns
@@ -423,3 +423,137 @@ setMethod("generateImageColumnsSCE", "QFeatures",
           function(x, ...) {
             .process_colData_for_image_columns(x, generateImageColumns, ...)
           })
+
+###################################################################################################
+#' @title 'cleanFilenames()': Clean Hyperlink Formatting from DataFrame Columns
+#'
+#' @description This function removes specified prefix and suffix patterns,
+#' typically hyperlink formatting (e.g., from Excel), from character columns
+#' within a data frame.
+#'
+#' @param data A \code{data.frame} containing the columns to be cleaned.
+#' @param column_names A character vector specifying the names of the columns
+#'   in \code{data} that need to be cleaned.
+#' @param prefix_pattern A character string containing a regular expression
+#'   for the prefix to be removed from the start of the strings in the
+#'   specified columns. Defaults to \code{'^=HYPERLINK\\\\("'}.
+#' @param suffix_pattern A character string containing a regular expression
+#'   for the suffix to be removed from the end of the strings in the
+#'   specified columns. Defaults to \code{'"\\\\)$'}.
+#'
+#' @return A \code{data.frame} with the specified formatting removed from the
+#'   target columns. Columns not specified or not of character type (after a
+#'   warning) will remain unchanged.
+#'
+#' @details
+#' The function iterates through each column specified in \code{column_names}.
+#' For each column:
+#' \enumerate{
+#'   \item It first checks if the column is of character type. If not, a warning
+#'         is issued for that column, and it is skipped (returned as is).
+#'   \item If it is a character column, it sequentially applies two \code{gsub}
+#'         operations:
+#'         \itemize{
+#'           \item Removes the \code{prefix_pattern} from the beginning of
+#'                 each string.
+#'           \item Removes the \code{suffix_pattern} from the end of each string
+#'                 (from the result of the prefix removal).
+#'         }
+#' }
+#' The default patterns are designed to clean strings like
+#' \code{"=HYPERLINK(\\"path/to/file.jpg\\")"} into \code{"path/to/file.jpg"}.
+
+#'
+#' @examples
+#' if (requireNamespace("dplyr", quietly = TRUE)) {
+#'   cDat_example <- data.frame(
+#'     ID = 1:3,
+#'     ImageFile = c('=HYPERLINK("image1.png")',
+#'                   'plain_file.jpg',
+#'                   '=HYPERLINK("image2.tif")'),
+#'     Background = c('=HYPERLINK("bg1.png")',
+#'                    '=HYPERLINK("bg2.jpg")',
+#'                    'no_hyperlink_here'),
+#'     Notes = c("Note1", "=HYPERLINK(\"doc1.pdf\")", "Note3"),
+#'     NumericCol = c(10,20,30),
+#'     FactorCol = factor(c("A", "B", "A")),
+#'     stringsAsFactors = FALSE
+#'   )
+#'
+#'   # Clean 'ImageFile' and 'Background' columns with default patterns
+#'   cleaned_data1 <- cleanFilenames(cDat_example,
+#'                                   column_names = c("ImageFile", "Background"))
+#'   print("Cleaned ImageFile and Background:")
+#'   print(cleaned_data1)
+#'
+#'   # Clean 'Notes' column with default patterns
+#'   cleaned_data_notes <- cleanFilenames(cDat_example, column_names = "Notes")
+#'   print("Cleaned Notes:")
+#'   print(cleaned_data_notes)
+#'
+#' }
+#'#' @importFrom dplyr mutate across all_of
+#' @importFrom dplyr %>%
+#' @importFrom dplyr mutate across all_of cur_column
+#' @export
+cleanFilenames <- function(data, column_names,
+                           prefix_pattern = '^=HYPERLINK\\("',
+                           suffix_pattern = '"\\)$') {
+
+  # --- Input Validation ---
+  if (!is.data.frame(data)) {
+    stop("Input 'data' must be a data.frame.", call. = FALSE)
+  }
+
+  if (missing(column_names) || !is.character(column_names) || length(column_names) == 0) {
+    stop("'column_names' must be provided as a non-empty character vector of column names.", call. = FALSE)
+  }
+
+  # Ensure all elements in column_names are single, non-NA, non-empty strings
+  if (any(!sapply(column_names, function(x) is.character(x) && length(x) == 1 && !is.na(x) && nzchar(x)))) {
+    stop("All elements in 'column_names' must be single, non-NA, non-empty character strings.", call. = FALSE)
+  }
+
+  missing_cols <- column_names[!column_names %in% names(data)]
+  if (length(missing_cols) > 0) {
+    stop(paste("The following specified columns are not in the data frame:",
+               paste(shQuote(missing_cols), collapse = ", ")), call. = FALSE)
+  }
+
+  if (!is.character(prefix_pattern) || length(prefix_pattern) != 1) {
+    stop("'prefix_pattern' must be a single string (regular expression).", call. = FALSE)
+  }
+  if (!is.character(suffix_pattern) || length(suffix_pattern) != 1) {
+    stop("'suffix_pattern' must be a single string (regular expression).", call. = FALSE)
+  }
+
+  # Check for dplyr availability for robustness if run outside of a package context
+  # For package use, @importFrom and DESCRIPTION's Imports field handle this.
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
+    stop("The 'dplyr' package is required for this function. Please install it.", call. = FALSE)
+  }
+
+  # --- Cleaning Logic ---
+  data_modified <- data %>%
+    dplyr::mutate(
+      dplyr::across(dplyr::all_of(column_names), .fns = function(current_col_vector) {
+        # Check if the column is of character type. Factors are not directly character.
+        if (!is.character(current_col_vector)) {
+          warning(paste0("Column '", dplyr::cur_column(),
+                         "' is not of character type (e.g., it might be factor, numeric). ",
+                         "Values in this column will not be cleaned."),
+                  call. = FALSE)
+          return(current_col_vector) # Return the column unchanged
+        }
+
+        # Apply prefix removal (gsub is from base R)
+        cleaned_vector <- gsub(prefix_pattern, "", current_col_vector)
+        # Apply suffix removal on the already prefix-cleaned vector
+        cleaned_vector <- gsub(suffix_pattern, "", cleaned_vector)
+
+        return(cleaned_vector)
+      })
+    )
+
+  return(data_modified)
+}

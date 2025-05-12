@@ -3,7 +3,6 @@
 \docType{methods}
 \name{HTMLpanel-class}
 \alias{HTMLpanel-class}
-\alias{HTMLpanel}
 \alias{initialize,HTMLpanel-method}
 \alias{.defineDataInterface,HTMLpanel-method}
 \alias{.createObservers,HTMLpanel-method}

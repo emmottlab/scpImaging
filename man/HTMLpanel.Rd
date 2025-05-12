@@ -4,14 +4,14 @@
 \alias{HTMLpanel}
 \title{Create an HTML Panel Instance}
 \usage{
-HTMLpanel(...)
+HTMLpanel(FilePath, ...)
 }
 \arguments{
-\item{...}{Additional arguments passed to the \code{initialize} method of
-the parent \linkS4class{Panel} class.}
-
 \item{FilePath}{Character scalar specifying the path to the file
 (.md or .html) to be displayed. This argument is mandatory.}
+
+\item{...}{Additional arguments passed to the \code{initialize} method of
+the parent \linkS4class{Panel} class, or to set other slots.}
 }
 \value{
 An \code{HTMLpanel} object.

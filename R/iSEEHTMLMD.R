@@ -28,7 +28,7 @@
 #' @author Ed Emmott
 #' @seealso \linkS4class{Panel}
 #' @name HTMLpanel-class
-#' @aliases HTMLpanel HTMLpanel-class
+#' @aliases HTMLpanel-class
 #' initialize,HTMLpanel-method
 #'.defineDataInterface,HTMLpanel-method
 #'.createObservers,HTMLpanel-method
@@ -108,9 +108,9 @@ setValidity2("HTMLpanel", function(object) {
 #' for displaying content from a Markdown or HTML file.
 #'
 #' @param FilePath Character scalar specifying the path to the file
-#'   (.md or .html) to be displayed. This argument is mandatory.
+#'  (.md or .html) to be displayed. This argument is mandatory.
 #' @param ... Additional arguments passed to the \code{initialize} method of
-#'   the parent \linkS4class{Panel} class.
+#'  the parent \linkS4class{Panel} class, or to set other slots.
 #'
 #' @return An \code{HTMLpanel} object.
 #' @author Ed Emmott
@@ -118,12 +118,10 @@ setValidity2("HTMLpanel", function(object) {
 #' @export
 #' @examples
 #' # panel <- HTMLpanel(FilePath = "path/to/your/file.md")
-HTMLpanel <- function(...) {
-  new("HTMLpanel",...)
+HTMLpanel <- function(FilePath, ...) {
+  new("HTMLpanel", FilePath = FilePath, ...)
 }
-HTMLpanel <- function(...) {
-  new("HTMLpanel",...)
-}
+
 #' @importFrom iSEE .fullName
 #' @export
 setMethod(".fullName", "HTMLpanel", function(x) "HTML panel")
