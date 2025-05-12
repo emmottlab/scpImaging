@@ -48,7 +48,8 @@ Default Configurations:
 The \code{column_configs} argument allows overriding these defaults. The names of the
 list provided in \code{column_configs} should match the keys of the default configurations
 (e.g., "Cropped", "CP_Mask") to override them. If a configuration name in
-\code{column_configs} does not match a default, it defines a new derived column.
+\code{column_configs} does not match a default, it defines a new derived column. Recommend
+\strong{not} overriding the defaults.
 
 Prefix rules add the specified string after any directory path but before the base filename.
 
@@ -65,10 +66,6 @@ If a "replace" suffix rule is specified but the \verb{<old_string>} is not found
 given source filename, the replacement does not occur for that filename, and a single
 warning summarizing all mismatches may be issued at the end.
 Generated column names that clash with existing columns in \code{data} will overwrite them, issuing a warning.
-
-The function uses \code{dplyr::mutate} for adding columns and \code{stringr} functions
-(\code{str_c}, \code{str_replace}, \code{str_detect}, \code{str_match}) along with \code{tools} functions
-(\code{file_path_sans_ext}, \code{file_ext}) for efficient string and path manipulation.
 }
 \examples{
 # Create a sample data frame

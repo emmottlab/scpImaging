@@ -2,7 +2,7 @@
 % Please edit documentation in R/imageProcessing.R
 \name{overlayMaskOnParent}
 \alias{overlayMaskOnParent}
-\title{Overlay Segmentation Masks onto Parent Images at Specific Coordinates}
+\title{'overlayMaskOnParent()': Overlay Segmentation Masks onto Parent Images at Specific Coordinates}
 \usage{
 overlayMaskOnParent(
   parent_image_input,
@@ -12,7 +12,7 @@ overlayMaskOnParent(
   mode = c("outline", "overlay"),
   parent_image_suffix = "_Run.png",
   mask_suffix = "_cp_masks.png",
-  output_suffix = "_parent_overlayed.png",
+  output_suffix = "_Run_parent_overlayed.png",
   outline_col = "cyan",
   outline_lwd = 2,
   overlay_col = "yellow",
@@ -23,12 +23,13 @@ overlayMaskOnParent(
 \item{parent_image_input}{Path to a directory containing the parent image files.}
 
 \item{mask_input}{Path to a directory containing the segmentation mask files
-(corresponding to cropped regions).}
+(corresponding to cropped regions). Assumes mask names follow the pattern
+cropped_ ... _cp_masks.png.}
 
 \item{coord_df}{An R dataframe containing the mapping information. Must include
-columns: 'Image_File' (base name used for both parent and mask files,
-without suffix), 'X' (center x-coordinate of crop in parent), 'Y' (center
-y-coordinate of crop in parent).}
+columns: 'ImageFile' (base name OR full filename used for parent files),
+'X' (center x-coordinate of crop in parent), 'Y' (center y-coordinate of crop in parent). This
+is produced as part of the cellenONE output, or can use an scpAnnotator file.}
 
 \item{output_target}{Path to a directory where the composite parent images
 (with overlays) will be saved.}
@@ -36,14 +37,15 @@ y-coordinate of crop in parent).}
 \item{mode}{Character string: "outline" or "overlay". Determines the
 visualization style. Default is "outline".}
 
-\item{parent_image_suffix}{Character string. Suffix appended to the \code{Image_File}
-value to find parent image files. Default is \code{"_Run.png"}.}
+\item{parent_image_suffix}{Character string. Suffix expected for parent image
+files (e.g., "_Run.png"). Used to find parent images and derive base names.
+Default is "_Run.png".}
 
-\item{mask_suffix}{Character string. Suffix appended to the \code{Image_File}
-value to find mask files. Default is \code{"_cp_masks.png"}.}
+\item{mask_suffix}{Character string. The final suffix part of the mask filename
+(e.g., "_cp_masks.png"). Default is "_cp_masks.png".}
 
-\item{output_suffix}{Character string. Suffix appended to the \code{Image_File}
-value for the generated output files. Default is \code{"_parent_overlayed.png"}.}
+\item{output_suffix}{Character string. Suffix appended to the determined parent
+base name for the generated output files. Default is "_parent_overlayed.png". \strong{Strongly recommend} not changing.}
 
 \item{outline_col}{Color for the outlines (used if mode="outline"). Default is "cyan".}
 
@@ -60,11 +62,12 @@ Invisibly returns a list of paths to the successfully created output files.
 }
 \description{
 Reads parent microscopy images, corresponding segmentation masks
-(which match cropped regions), and a dataframe specifying the crop coordinates.
+(which match cropped regions), and a dataframe specifying the crop coordinates (e.g.
+a cellenONE cell sort file, or scpAnnotator file).
 Creates output images showing the masks overlaid onto the parent images at the
 correct locations, either as outlines or semi-transparent overlays.
 Processes images in batches based on the parent image identifier found in the
-coordinate dataframe. Uses the 'magick' package. Console output is minimized.
+coordinate dataframe.
 }
 \examples{
 \dontrun{
@@ -80,117 +83,45 @@ dir.create(mask_dir, showWarnings = FALSE)
 dir.create(out_dir, showWarnings = FALSE)
 
 # Define suffixes
-parent_suffix <- "_microscopy.png" # Suffix for the parent image
-mask_suffix <- "_mask.png" # Suffix for the mask image
-output_suffix <- "_final_overlay.png"
+parent_suffix <- "_Run.png" # Suffix for the parent image
+mask_suffix <- "_cp_masks.png" # Suffix for the mask image
+output_suffix <- "final_overlay.png"
 
 # Create dummy parent image
-image_base <- "Experiment1_Tile1_RegionA" # Base name is the same
-parent_path <- file.path(parent_dir, paste0(image_base, parent_suffix))
+parent_base_name <- "Experiment1_Tile1"
+parent_file_path <- file.path(parent_dir, paste0(parent_base_name, parent_suffix))
 parent_img <- magick::image_blank(width = 500, height = 400, color = "grey80")
-magick::image_write(parent_img, parent_path)
+magick::image_write(parent_img, parent_file_path)
 
-# Create dummy mask file (representing a crop from the parent)
-mask_path <- file.path(mask_dir, paste0(image_base, mask_suffix))
+# Create dummy mask file following the specific pattern
+# cropped[parent_base_name]Run[mask_suffix]
+mask_file_name_actual <- paste0("cropped", parent_base_name, "_Run", mask_suffix)
+mask_path <- file.path(mask_dir, mask_file_name_actual)
 mask <- magick::image_blank(width = 50, height = 50, color = "black")
 mask <- magick::image_draw(mask)
 graphics::symbols(25, 25, circles = 15, inches = FALSE, add = TRUE, fg = "white", bg = "white")
 grDevices::dev.off()
 magick::image_write(mask, mask_path)
 
-# Create another mask for the same parent
-image_base2 <- "Experiment1_Tile1_RegionA" # Same parent base name
-mask_path2 <- file.path(mask_dir, paste0(image_base2, "_mask_2.png")) # Different mask suffix needed
-mask2 <- magick::image_blank(width = 60, height = 40, color = "black")
-mask2 <- magick::image_draw(mask2)
-graphics::symbols(30, 20, rectangles = matrix(c(60,40),1,2), inches = FALSE,
-add = TRUE, fg = "white", bg = "white")
-grDevices::dev.off()
-magick::image_write(mask2, mask_path2)
-
-# Create coordinate dataframe
-# Image_File refers to the base name used for both parent and mask
-coord_data <- data.frame(
-Image_File = c(image_base, image_base2), # Base name identifier
-X = c(100, 300), # Center X in parent
-Y = c(150, 250) # Center Y in parent
+# --- Example: coord_df with FULL filenames (handled by modified script) ---
+coord_data_full <- data.frame(
+  ImageFile = c(paste0(parent_base_name, parent_suffix)), # Full filename identifier
+  X = c(300),
+  Y = c(250)
 )
-# IMPORTANT: If multiple masks refer to the SAME parent image,
-# they MUST have the same Image_File value in the dataframe.
-# The mask_suffix parameter will be appended to this Image_File value
-# to find the specific mask file. If masks for the same parent have different
-# identifiers *within* their filename (like _mask_1, _mask_2), this needs
-# a different approach (like the previous regex method or a dedicated mask ID column).
-# Assuming here Image_File identifies the parent, and mask_suffix identifies the mask type.
-# Let's adjust the example slightly for clarity if multiple masks per parent exist:
-
-# --- Revised Example Setup for Multiple Masks per Parent ---
-# Parent Image
-parent_base_name <- "Experiment1_Tile1"
-parent_file_path <- file.path(parent_dir, paste0(parent_base_name, parent_suffix))
-parent_img <- magick::image_blank(width = 500, height = 400, color = "grey80")
-magick::image_write(parent_img, parent_file_path)
-
-# Mask 1 (associated with parent_base_name)
-mask_id1 <- paste0(parent_base_name, "_crop1") # Unique ID for this mask
-mask_path1 <- file.path(mask_dir, paste0(mask_id1, mask_suffix))
-mask1 <- magick::image_blank(width = 50, height = 50, color = "black")
-mask1 <- magick::image_draw(mask1); graphics::symbols(25, 25, circles = 15,
-inches = FALSE, add = TRUE, fg = "white", bg = "white"); grDevices::dev.off()
-magick::image_write(mask1, mask_path1)
-
-# Mask 2 (associated with parent_base_name)
-mask_id2 <- paste0(parent_base_name, "_crop2") # Unique ID for this mask
-mask_path2 <- file.path(mask_dir, paste0(mask_id2, mask_suffix))
-mask2 <- magick::image_blank(width = 60, height = 40, color = "black")
-mask2 <- magick::image_draw(mask2); graphics::symbols(30, 20, rectangles = matrix(c(60,40),1,2),
-inches = FALSE, add = TRUE, fg = "white", bg = "white");
-grDevices::dev.off()
-magick::image_write(mask2, mask_path2)
-
-# Coordinate dataframe - Image_File now refers to the MASK ID
-# We need a way to link back to the parent. Add Parent_Base column.
-coord_data_revised <- data.frame(
-Image_File = c(mask_id1, mask_id2), # ID for the mask file
-Parent_Base = c(parent_base_name, parent_base_name), # Base name of parent
-X = c(100, 300),
-Y = c(150, 250)
-)
-# This revised structure seems necessary if Image_File cannot simultaneously
-# identify the unique mask AND the parent. Let's proceed with this structure.
-
-# --- Run the function (using revised dataframe structure) ---
-# Need to re-add Parent_Base column requirement
-# Sticking to the user's clarification: Image_File IS the parent base.
-# This implies only ONE mask file per parent can be processed this way,
-# unless the coord_df has multiple rows with the SAME Image_File value
-# but different X, Y (which implies multiple instances of the SAME mask overlayed).
-# Let's assume the user means Image_File identifies the parent, and the mask
-# file corresponding to that parent is found using Image_File + mask_suffix.
-
-coord_data_simple <- data.frame(
-Image_File = c(parent_base_name), # Base name identifies parent AND the single mask
-X = c(100),
-Y = c(150)
-)
-# Create the corresponding mask file
-mask_path_simple <- file.path(mask_dir, paste0(parent_base_name, mask_suffix))
-magick::image_write(mask1, mask_path_simple) # Use mask1's content
 
 overlayMaskOnParent(
-parent_image_input = parent_dir,
-mask_input = mask_dir,
-coord_df = coord_data_simple, # Use the simplified dataframe
-output_target = out_dir,
-mode = "overlay",
-parent_image_suffix = parent_suffix,
-mask_suffix = mask_suffix,
-output_suffix = output_suffix,
-overlay_col = "green",
-overlay_alpha = 0.6
+  parent_image_input = parent_dir,
+  mask_input = mask_dir,
+  coord_df = coord_data_full, # Use the dataframe with full filenames
+  output_target = out_dir,
+  mode = "outline",
+  parent_image_suffix = parent_suffix, # e.g., "_Run.png"
+  mask_suffix = mask_suffix,         # e.g., "_cp_masks.png"
+  output_suffix = output_suffix,
+  outline_col = "blue"
 )
-
-print(paste("Output saved in:", out_dir))
+print(paste("Output (full name input) saved in:", out_dir))
 list.files(out_dir) # Should show one file named Experiment1_Tile1_final_overlay.png
 
 # --- Clean up ---

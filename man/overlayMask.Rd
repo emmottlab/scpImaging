@@ -2,7 +2,7 @@
 % Please edit documentation in R/imageProcessing.R
 \name{overlayMask}
 \alias{overlayMask}
-\title{Overlay Segmentation Mask on Image (Single File or Directory)}
+\title{'overlayMask()': Overlay Segmentation Mask on Image (Single File or Directory)}
 \usage{
 overlayMask(
   image_input,
@@ -44,7 +44,7 @@ Default is NULL.}
 
 \item{output_suffix}{Character string. Suffix used for the generated output
 files. The mask file's \code{mask_suffix} will be replaced with this.
-Default is \code{"_cp_masks_overlay.png"}.}
+Default is \code{"_cp_masks_overlay.png"}. \strong{Strongly recommend} not changing.}
 
 \item{outline_col}{Color for the outlines (used if mode="outline"). Can be any
 format recognized by \code{magick}. Default is "cyan".}
@@ -65,8 +65,7 @@ Invisibly returns a list of paths to the successfully created output files.
 Reads a microscopy image and a corresponding segmentation mask
 (or directories containing multiple images/masks), then creates an output
 image (or images) showing the mask as either outlines or a semi-transparent
-overlay on the original image. Uses the 'magick' package. Console output
-is minimized, primarily showing warnings for missing files or processing errors.
+overlay on the original image. Uses the 'magick' package.
 }
 \examples{
 \dontrun{

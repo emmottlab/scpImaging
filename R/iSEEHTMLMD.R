@@ -1,11 +1,3 @@
-# Load necessary libraries
-# Ensure iSEE and its dependencies (shiny, SummarizedExperiment, S4Vectors, tools, rmarkdown) are installed
-# library(iSEE)
-# library(SummarizedExperiment)
-# library(shiny)
-# library(tools) # For file_ext
-# library(rmarkdown) # For pandoc_convert
-# library(S4Vectors) # For setValidity2
 
 ######################################################################
 ### HTMLpanel Class Definition and Methods
@@ -13,8 +5,9 @@
 
 #' The HTMLpanel Class
 #'
-#' The HTMLpanel class displays content from a developer-specified Markdown or HTML file.
-#' This is useful for including static documentation, reports, or instructions within an iSEE app.
+#' The HTMLpanel class displays content from an iSEE app developer-specified Markdown or HTML file.
+#' This is useful for including static documentation, for example an introduction or context for the
+#' dataset.
 #'
 #' @section Slot overview:
 #' The following slots are relevant to the content:
@@ -109,7 +102,25 @@ setValidity2("HTMLpanel", function(object) {
   TRUE
 })
 
+#' Create an HTML Panel Instance
+#'
+#' This function constructs an \code{HTMLpanel} object, an iSEE panel
+#' for displaying content from a Markdown or HTML file.
+#'
+#' @param FilePath Character scalar specifying the path to the file
+#'   (.md or .html) to be displayed. This argument is mandatory.
+#' @param ... Additional arguments passed to the \code{initialize} method of
+#'   the parent \linkS4class{Panel} class.
+#'
+#' @return An \code{HTMLpanel} object.
+#' @author Ed Emmott
+#' @seealso \code{\link{HTMLpanel-class}}
 #' @export
+#' @examples
+#' # panel <- HTMLpanel(FilePath = "path/to/your/file.md")
+HTMLpanel <- function(...) {
+  new("HTMLpanel",...)
+}
 HTMLpanel <- function(...) {
   new("HTMLpanel",...)
 }
@@ -355,94 +366,8 @@ setMethod(".exportOutput", "HTMLpanel", function(x, se, all_memory, all_contents
 setMethod(".definePanelTour", "HTMLpanel", function(x) {
   panel_name <-.getEncodedName(x)
   out <- rbind(
-    c(paste0("#", panel_name), sprintf("The <font color=\"%s\">HTMLpanel</font> displays content from a pre-defined Markdown or HTML file specified by the application developer. This allows static information or reports to be shown alongside interactive elements.",.getPanelColor(x)))
+    c(paste0("#", panel_name), sprintf("The <font color=\"%s\">HTMLpanel</font> displays content from a pre-defined Markdown or HTML file specified by the iSEE app developer. This allows static information, e.g. an introduction and/or statisu images to be shown alongside dynamic content from the summerisedexperiment/singlecellexperiment object.",.getPanelColor(x)))
   )
 
   data.frame(element = out[, 1], intro = out[, 2], stringsAsFactors = FALSE)
 })
-
-
-######################################################################
-### Example Usage
-######################################################################
-#
-# # --- Configuration ---
-# sce_file <- "sce.rds"
-# www_dir <- "www"
-# md_filename <- "custom_report.md"
-# # Define the relative path first, as a user would
-# relative_md_file_path <- file.path(www_dir, md_filename)
-#
-# # --- Prepare Environment ---
-#
-# # 1. Create www directory if it doesn't exist
-# if (!dir.exists(www_dir)) { # Check directory existence [12, 26]
-#   dir.create(www_dir) # Create directory [6, 12]
-#   message("Created directory: ", www_dir)
-# }
-#
-# # 2. Create custom markdown file in www directory
-# md_content <- c(
-#   "# Custom Report for iSEE",
-#   "",
-#   "This content is generated dynamically for the `HTMLpanel` example.",
-#   "",
-#   "## Section 1: Introduction",
-#   "This panel demonstrates loading content from a local Markdown file.",
-#   "",
-#   "## Section 2: Details",
-#   "- **Data Source:** Uses `sce.rds` if available, otherwise a dummy `SummarizedExperiment`.",
-#   "- **Panel Type:** `HTMLpanel`",
-#   "- **File Location:** `", relative_md_file_path, "` (resolved to absolute path internally)",
-#   "",
-#   "```R",
-#   "# Some example R code",
-#   "print('Hello from the Markdown file!')",
-#   "x <- 1:10",
-#   "mean(x)",
-#   "```",
-#   "",
-#   "End of report."
-# )
-# # Use the relative path for writing, assuming script runs in the correct place
-# writeLines(md_content, relative_md_file_path) # Write file content [17]
-# message("Created markdown file: ", relative_md_file_path)
-#
-# # 3. Load SummarizedExperiment object
-# if (file.exists(sce_file)) { # Check file existence
-#   se <- readRDS(sce_file) # Load RDS file [4, 16]
-#   message("Loaded SummarizedExperiment from: ", sce_file)
-# } else {
-#   message("File '", sce_file, "' not found in working directory.")
-#   message("Creating a dummy SummarizedExperiment object for demonstration.")
-#   # Create a dummy SummarizedExperiment object if sce.rds is not found
-#   set.seed(123)
-#   se <- SummarizedExperiment(
-#     assays = list(counts = matrix(rpois(100, lambda = 10), 20, 5)),
-#     colData = DataFrame(sample = paste0("S", 1:5)),
-#     rowData = DataFrame(gene = paste0("G", 1:20))
-#   )
-# }
-#
-# # --- Define iSEE Panels ---
-#
-# # Define an instance of HTMLpanel pointing to the generated Markdown file
-# # Provide the RELATIVE path here; initialize will convert it to absolute
-# html_panel_md <- HTMLpanel(FilePath = relative_md_file_path, PanelWidth = 6L)
-#
-# # Define another standard iSEE panel for context (optional)
-# row_plot <- RowDataPlot(PanelWidth = 6L)
-#
-# # --- Launch iSEE ---
-#
-# # Configure the iSEE application with the custom panel and data
-# app <- iSEE(se, initial = list(html_panel_md, row_plot))
-#
-# # Run the app (if in an interactive session)
-# if (interactive()) {
-#   shiny::runApp(app, launch.browser = TRUE)
-# }
-#
-# # --- Clean up (Optional) ---
-# # unlink(www_dir, recursive = TRUE)
-# # message("Cleaned up directory: ", www_dir)

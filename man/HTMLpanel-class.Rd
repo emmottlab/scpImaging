@@ -17,8 +17,9 @@
 \alias{.definePanelTour,HTMLpanel-method}
 \title{The HTMLpanel Class}
 \description{
-The HTMLpanel class displays content from a developer-specified Markdown or HTML file.
-This is useful for including static documentation, reports, or instructions within an iSEE app.
+The HTMLpanel class displays content from an iSEE app developer-specified Markdown or HTML file.
+This is useful for including static documentation, for example an introduction or context for the
+dataset.
 }
 \section{Slots}{
 

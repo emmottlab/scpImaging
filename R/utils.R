@@ -1,7 +1,10 @@
 # Utils - various utility functions for package for checking on data processing or handling dataframe string reformatting
 
 # 1. generateImageColumns() status: functional
-# 2. generateImageColumnsSCP() status: non-existant
+# 2. generateImageColumnsSCE() status: untested but present - wrapper for the above to add these columns to the colData of a singlecellexperiment object
+# 3. addCellprofilerToDF() status: non-existant
+# 4. addCellprofilerToSCE() status: non-existant - wrapped for the above to add these columns to the colData of a singlecellexperiment object
+# 5. cleanFileNames(): status: non-existant - removes =hyperlink(" and ") from filenames.
 
 ###################################################################################################
 #' generateImageColumns(): Generate Derived Image File Columns
@@ -41,7 +44,8 @@
 #' The `column_configs` argument allows overriding these defaults. The names of the
 #' list provided in `column_configs` should match the keys of the default configurations
 #' (e.g., "Cropped", "CP_Mask") to override them. If a configuration name in
-#' `column_configs` does not match a default, it defines a new derived column.
+#' `column_configs` does not match a default, it defines a new derived column. Recommend
+#' **not** overriding the defaults.
 #'
 #' Prefix rules add the specified string after any directory path but before the base filename.
 #'
@@ -58,10 +62,6 @@
 #' given source filename, the replacement does not occur for that filename, and a single
 #' warning summarizing all mismatches may be issued at the end.
 #' Generated column names that clash with existing columns in `data` will overwrite them, issuing a warning.
-#'
-#' The function uses `dplyr::mutate` for adding columns and `stringr` functions
-#' (`str_c`, `str_replace`, `str_detect`, `str_match`) along with `tools` functions
-#' (`file_path_sans_ext`, `file_ext`) for efficient string and path manipulation.
 #'
 #' @returns The input `data` frame (`tibble`) with the newly generated columns added.
 #'
@@ -260,3 +260,166 @@ generateImageColumns <- function(data,
 
   return(data)
 }
+
+###################################################################################################
+# -------------------------------------------------------------------------
+# Internal helper function to process colData
+# -------------------------------------------------------------------------
+.process_colData_for_image_columns <- function(x,
+                                               df_processing_function,
+                                               ...) {
+  current_colData <- SummarizedExperiment::colData(x)
+
+  if (nrow(current_colData) == 0) {
+    obj_class <- class(x)[1] # Get the primary class of the object
+    warning(paste0(
+      "colData of the '", obj_class,
+      "' object is empty. No columns will be generated."
+    ), call. = FALSE)
+    return(x)
+  }
+
+  # Preserve original row names from the DataFrame
+  original_rownames <- rownames(current_colData)
+
+  # Convert DataFrame to data.frame for the processing function
+  colData_df <- as.data.frame(current_colData)
+
+  # Ensure rownames are correctly set on the data.frame if they existed
+  # as.data.frame(DataFrame) usually preserves them, but this is a safeguard.
+  if (!is.null(original_rownames) && !identical(rownames(colData_df), original_rownames)) {
+    if (length(original_rownames) == nrow(colData_df)) {
+      rownames(colData_df) <- original_rownames
+    } else {
+      # This case should be rare if current_colData had valid rownames
+      warning("Rownames from colData could not be consistently applied to the intermediate data.frame.", call. = FALSE)
+    }
+  }
+
+  # Capture additional arguments for the df_processing_function
+  additional_args <- list(...)
+  all_args_for_df_func <- c(list(data = colData_df), additional_args)
+
+  # Call the data.frame processing function (i.e., your original generateImageColumns)
+  modified_colData_df <- do.call(df_processing_function, all_args_for_df_func)
+
+  # Convert the modified data.frame back to a DataFrame
+  # Preserve rownames: assume df_processing_function preserves them,
+  # or fall back to original_rownames if structure is compatible.
+  final_rownames <- rownames(modified_colData_df)
+  if (is.null(final_rownames) && !is.null(original_rownames) && length(original_rownames) == nrow(modified_colData_df)) {
+    # Fallback if rownames were lost and dimensions match
+    final_rownames <- original_rownames
+  } else if (!identical(final_rownames, original_rownames) && !is.null(original_rownames)  && length(original_rownames) == nrow(modified_colData_df)) {
+    # If rownames were changed by df_processing_function but originals are still valid and preferred by SE/QFeatures
+    # Typically, we want the rownames from modified_colData_df as they might be reordered.
+    # However, for colData, the original sample order is paramount.
+    # The original `generateImageColumns` is designed to preserve row order and names.
+    final_rownames <- original_rownames # Prioritize original sample order
+  }
+
+
+  SummarizedExperiment::colData(x) <- S4Vectors::DataFrame(modified_colData_df, row.names = final_rownames)
+  return(x)
+}
+
+
+#' @name generateImageColumnsSCE
+#' @rdname generateImageColumnsSCE
+#'
+#' @title 'generateImageColumnsSCE():' Apply generateImageColumns to Bioconductor Object colData
+#'
+#' @description
+#' A wrapper function to apply \code{generateImageColumns} (a function that processes
+#' data.frames) to the \code{colData} of a \code{SummarizedExperiment}
+#' (which includes \code{SingleCellExperiment}) or a \code{QFeatures} object.
+#' It extracts the \code{colData}, processes it, and then updates the object's
+#' \code{colData} with the new columns.
+#'
+#' @param x A \code{SummarizedExperiment}, \code{SingleCellExperiment}, or \code{QFeatures} object.
+#' @param ... Arguments to be passed to the underlying \code{generateImageColumns} function
+#'   that operates on data.frames. This typically includes \code{source_column}
+#'   and \code{column_configs}.
+#'
+#' @details
+#' This function serves as a convenient wrapper. The method for \code{SummarizedExperiment}
+#' also handles \code{SingleCellExperiment} objects due to class inheritance.
+#' For \code{QFeatures} objects, this function modifies the primary (global) \code{colData}
+#' of the \code{QFeatures} object.
+#'
+#' Refer to the documentation of the original \code{generateImageColumns} function
+#' for details on its arguments and behavior when processing the data.frame.
+#'
+#' @return The input object (\code{x}) with its \code{colData} updated to include
+#' the new columns.
+#'
+#' @seealso \code{\link{generateImageColumns}} (for the underlying data.frame implementation)
+#'
+#' @examples
+#' # --- Prerequisite: Define or load your original generateImageColumns function ---
+#' # generateImageColumns <- function(data, source_column = "ImageFile", ...) {
+#' #   # ... (your data.frame processing logic)
+#' #   data$newCol <- paste0("processed_", data[[source_column]])
+#' #   return(data)
+#' # }
+#'
+#' # --- Example for SummarizedExperiment (and by extension SingleCellExperiment) ---
+#' library(SummarizedExperiment)
+#' counts <- matrix(rnorm(40), ncol = 4)
+#' rownames(counts) <- paste0("gene", 1:10)
+#' colnames(counts) <- paste0("sample", 1:4)
+#' sample_df <- S4Vectors::DataFrame(
+#'   ImageFile = c("s1.png", "s2.png", "s3.png", "s4.png"),
+#'   row.names = colnames(counts)
+#' )
+#' se <- SummarizedExperiment(assays = list(counts = counts), colData = sample_df)
+#'
+#' # Assuming generateImageColumns and generateImageColumnsSCE are defined:
+#' # print(colData(se))
+#' # se_modified <- generateImageColumnsSCE(se, source_column = "ImageFile")
+#' # print(colData(se_modified))
+#'
+#' # If sce is a SingleCellExperiment, it would work the same:
+#' # library(SingleCellExperiment)
+#' # sce <- as(se, "SingleCellExperiment")
+#' # sce_modified <- generateImageColumnsSCE(sce, source_column = "ImageFile")
+#' # print(colData(sce_modified))
+#'
+#' # --- Example for QFeatures ---
+#' library(QFeatures)
+#' qf_coldata <- S4Vectors::DataFrame(
+#'   GlobalImageFile = c("q_s1.jpg", "q_s2.jpg"),
+#'   Batch = c(1,2),
+#'   row.names = c("qSample1", "qSample2")
+#' )
+#' # Creating a minimal QFeatures object for example
+#' qf <- QFeatures(colData = qf_coldata) # No assays needed for this colData example
+#'
+#' # print(colData(qf))
+#' # qf_modified <- generateImageColumnsSCE(qf, source_column = "GlobalImageFile")
+#' # print(colData(qf_modified))
+#'
+#' @importMethodsFrom SummarizedExperiment colData
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @importClassesFrom QFeatures QFeatures
+#' @import S4Vectors
+NULL
+
+#' @rdname generateImageColumnsSCE
+#' @export
+setGeneric("generateImageColumnsSCE", function(x, ...) standardGeneric("generateImageColumnsSCE"))
+
+#' @rdname generateImageColumnsSCE
+#' @export
+setMethod("generateImageColumnsSCE", "SummarizedExperiment", # Also covers SingleCellExperiment
+          function(x, ...) {
+            .process_colData_for_image_columns(x, generateImageColumns, ...)
+          })
+
+#' @rdname generateImageColumnsSCE
+#' @export
+setMethod("generateImageColumnsSCE", "QFeatures",
+          function(x, ...) {
+            .process_colData_for_image_columns(x, generateImageColumns, ...)
+          })
