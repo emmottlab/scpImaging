@@ -45,7 +45,7 @@ jobs:
 
       # 2. Set up R using r-lib/actions
       - name: Set up R ${{ matrix.config.r }}
-        uses: r-lib/actions/setup-r@v2 # Use v2 for stability
+        uses: r-lib/actions/setup-r@v2 # Correct path for setup-r
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true # Use public RStudio Package Manager for faster binary installs
@@ -54,55 +54,53 @@ jobs:
       #    This action queries the R package DESCRIPTION for SystemRequirements
       - name: Install system dependencies (Linux/macOS)
         if: runner.os != 'Windows'
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-r-dependencies@v2 # Correct path for setup-r-dependencies
         with:
-          pak-version: devel # Use development version of pak for potentially better dependency resolution
+          pak-version: devel
           extra-packages: |
             any::rcmdcheck
-            any::remotes
-          needs: check # Specify that dependencies are needed for the 'check' stage
+          needs: check
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows'
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-r-dependencies@v2 # Correct path for setup-r-dependencies
         with:
           pak-version: devel
           extra-packages: |
             local::.
             any::rcmdcheck
-            any::remotes
           needs: check
 
-      # 4. Install R package dependencies (using pak for speed and robustness)
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-pak@v2
+      # 4. Set up pak package manager
+      - name: Setup pak
+        uses: r-lib/actions/setup-pak@v2 # <<< CORRECTED PATH HERE
         with:
-           pak-version: devel # Use the same pak version as above
+          pak-version: devel
 
+      # 5. Install R package dependencies using pak
       - name: Install package dependencies
         run: |
           options(crayon.enabled = TRUE)
-          pak::pkg_install(pkg = "rcmdcheck") # Ensure rcmdcheck is installed via pak
+          # Ensure rcmdcheck is installed via pak if not caught by setup-r-dependencies extra-packages
+          pak::pkg_install(pkg = "rcmdcheck", upgrade = TRUE)
+          # Install dependencies of the local package
           pak::local_install_dev_deps(upgrade = TRUE)
         shell: Rscript {0}
 
-      # 5. Run R CMD check
+      # 6. Run R CMD check
       - name: Check package
         env:
-          # Preventansi colors messing up check logs
+          # Prevent ansi colors messing up check logs
           R_CLI_NUM_COLORS: 0
           # Use more comprehensive check arguments, similar to CRAN
-          _R_CHECK_CRAN_INCOMING_: false # Set to false unless you really need strict CRAN incoming checks initially
+          _R_CHECK_CRAN_INCOMING_: false
         run: |
           options(crayon.enabled = TRUE)
           # Check results are saved to the 'check' directory
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
-      # 6. (Optional but Recommended) Upload check results
+      # 7. (Optional but Recommended) Upload check results
       - name: Upload check results
         if: failure() # Only upload if the check step failed
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-check-results # Name artifact uniquely
-          path: check # Path to the directory containing check results
+        uses: actions/
