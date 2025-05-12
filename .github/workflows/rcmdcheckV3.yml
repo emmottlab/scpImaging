@@ -1,0 +1,72 @@
+name: R Check Multi-OS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  R-CMD-check:
+    # Define runner OS and R version combinations
+    strategy:
+      fail-fast: false # Don't cancel other jobs if one fails
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        r-version: ['3.6.3', '4.1.1'] # Using versions from your template
+        # Consider using 'release', 'oldrel-1' if specific old versions aren't essential
+        # Or define specific combinations using 'include':
+        # include:
+        #   - os: ubuntu-latest
+        #     r-version: 'release'
+        #   - os: macos-latest
+        #     r-version: 'release'
+        #   - os: windows-latest
+        #     r-version: 'release'
+        #   - os: ubuntu-latest # Example: Check an older version only on Linux
+        #     r-version: '4.1.1'
+
+    # Use the OS from the matrix
+    runs-on: ${{ matrix.os }}
+
+    # Name the job for clarity in the UI
+    name: ${{ matrix.os }} (R ${{ matrix.r-version }})
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up R ${{ matrix.r-version }}
+        uses: r-lib/actions/setup-r@v2 # Use v2 tag instead of specific SHA
+        with:
+          r-version: ${{ matrix.r-version }}
+          use-public-rspm: true # Try using RSPM for faster package binaries
+
+      - name: Install check dependencies
+        run: |
+          install.packages(c("remotes", "rcmdcheck"))
+        shell: Rscript {0}
+        
+      - name: Install package dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - name: Check package
+        env:
+           R_CLI_NUM_COLORS: 0 # Avoid potential issues with ANSI colors in logs
+           _R_CHECK_CRAN_INCOMING_: false 
+        run: |
+          options(crayon.enabled = TRUE)
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure() # Only upload if the check step failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-r${{ matrix.r-version }}-check-results
+          path: check # Path to the directory containing check results
