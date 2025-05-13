@@ -1,17 +1,17 @@
 ### Functions for analysing cellenONE image metadata produced by Cellpose or CellProfiler
 
 # Currently this includes
-# 1. countCells() - status: functional - need to tidy
-# 2. addCellProfilerAttributes() - status: compiles, untested
-# 3. addCellProfilerAttributesSCE() - status: compiles, untested
+# 1. countCells() - status: functional
+# 2. addCellProfilerAttributes() - status: functional
+# 3. addCellProfilerAttributesSCE() - status: functional
 
 ##############################################################################################################
 
 #' 'countCells()':Count Unique Masks in PNG Segmentation Masks
 #'
 #' @description
-#' Processes PNG segmentation masks generated from cellpose .npy files using the
-#' `magick` package to count the number of unique positive integer values.
+#' Processes PNG segmentation masks generated from cellpose .npy files by
+#' counting the number of unique positive integer values.
 #' These values correspond to individual segmented objects (e.g., cells),
 #' while background pixels (value 0) are ignored.
 #' The function can handle input specified as a directory containing masks, an
@@ -47,7 +47,7 @@
 #'   Mutually exclusive with `path`. Defaults to `NULL`.
 #' @param suffix A character string specifying the filename suffix (pattern)
 #'   to match when `path` is provided. The pattern is matched at the end of
-#'   the filename. Defaults to `".png"`. Ignored if `filelist` is provided.
+#'   the filename. Defaults to `_cp_masks.png`. Ignored if `filelist` is provided.
 #' @param expected_bit_depth A numeric value indicating the expected bit depth
 #'   of the original PNG mask files (typically 8 or 16). This is used to
 #'   interpret the raw pixel data correctly. Defaults to 8.
@@ -136,7 +136,7 @@
 #' unlink(temp_dir, recursive = TRUE)
 #' }
 #'
-countCells <- function(path = NULL, filelist = NULL, suffix = ".png", expected_bit_depth = 8) {
+countCells <- function(path = NULL, filelist = NULL, suffix = "_cp_masks.png", expected_bit_depth = 8) {
 
   # --- Input Validation ---
   stopifnot("Provide either 'path' or 'filelist', but not both." = (!is.null(path) +!is.null(filelist) == 1),
@@ -291,7 +291,7 @@ countCells <- function(path = NULL, filelist = NULL, suffix = ".png", expected_b
 #' @param df2 The secondary data frame (data.frame or tibble) containing the
 #'   attributes to add.
 #' @param key1_col The name of the key column in `df1` (character string).
-#'   Defaults to `"Cropped_Path"`.
+#'   Defaults to `"Cropped"`.
 #' @param key2_col The name of the key column in `df2` (character string).
 #'   Defaults to `"FileName_Image"`.
 #' @param multiplet_handling Method to handle multiple rows for the same key in `df2`.
@@ -340,7 +340,7 @@ countCells <- function(path = NULL, filelist = NULL, suffix = ".png", expected_b
 #' @importFrom dplyr %>% left_join group_by slice_max filter n select distinct anti_join bind_rows rename_with
 addCellProfilerAttributes <- function(df1,
                                       df2,
-                                      key1_col = "Cropped_Path",
+                                      key1_col = "Cropped",
                                       key2_col = "FileName_Image",
                                       multiplet_handling = c("voidmultiplets", "takemaxarea"), ## Changed value here
                                       area_col = "AreaShape_Area") {

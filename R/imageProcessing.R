@@ -3,7 +3,7 @@
 # Currently this includes:
 # 1. cropImages() - Status: functional
 # 2. npyMasksToPng() - Status: functional - maxColorValue error means that there is no mask/cell identified in that file. Script good.
-# 3. overlayMask() - Status: functional - double check overlay again
+# 3. overlayMask() - Status: functional
 # 4. overlayMaskOnParent() - Status: functional
 
 ##############################################################################################################
