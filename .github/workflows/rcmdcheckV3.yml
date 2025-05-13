@@ -1,4 +1,4 @@
-name: R Check Multi-OS
+name: R Check Multi-OS (with Sys Deps)
 
 on:
   push:
@@ -11,28 +11,13 @@ permissions:
 
 jobs:
   R-CMD-check:
-    # Define runner OS and R version combinations
     strategy:
-      fail-fast: false # Don't cancel other jobs if one fails
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        r-version: ['3.6.3', '4.1.1'] # Using versions from your template
-        # Consider using 'release', 'oldrel-1' if specific old versions aren't essential
-        # Or define specific combinations using 'include':
-        # include:
-        #   - os: ubuntu-latest
-        #     r-version: 'release'
-        #   - os: macos-latest
-        #     r-version: 'release'
-        #   - os: windows-latest
-        #     r-version: 'release'
-        #   - os: ubuntu-latest # Example: Check an older version only on Linux
-        #     r-version: '4.1.1'
+        r-version: ['4.1.1'] # Using R 4.1.1
 
-    # Use the OS from the matrix
     runs-on: ${{ matrix.os }}
-
-    # Name the job for clarity in the UI
     name: ${{ matrix.os }} (R ${{ matrix.r-version }})
 
     steps:
@@ -40,33 +25,61 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up R ${{ matrix.r-version }}
-        uses: r-lib/actions/setup-r@v2 # Use v2 tag instead of specific SHA
+        uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.r-version }}
-          use-public-rspm: true # Try using RSPM for faster package binaries
+          use-public-rspm: true
 
-      - name: Install check dependencies
+      # <<<--- ADD SYSTEM DEPENDENCY INSTALLATION STEPS --->>>
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
-        shell: Rscript {0}
-        
-      - name: Install package dependencies
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            gfortran \
+            libgit2-dev
+
+      - name: Install macOS system dependencies
+        if: runner.os == 'macOS'
         run: |
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
+          brew install libgit2 # Others often pre-installed or handled differently
+
+      - name: Install Windows system dependencies (using Rtools4 bash)
+        if: runner.os == 'Windows'
+        shell: msys2 {0} # Use the bash shell provided by Rtools4
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed \
+            mingw-w64-x86_64-curl \
+            mingw-w64-x86_64-openssl \
+            mingw-w64-x86_64-libxml2 \
+            mingw-w64-x86_64-gcc-fortran \
+            mingw-w64-x86_64-libgit2
+
+      # Now run setup-r-dependencies, which should find system libs installed above
+      - name: Install R dependencies (CRAN, Bioc) using pak
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            local::.
+            any::rcmdcheck
+          needs: check
 
       - name: Check package
         env:
-           R_CLI_NUM_COLORS: 0 # Avoid potential issues with ANSI colors in logs
-           _R_CHECK_CRAN_INCOMING_: false 
+           R_CLI_NUM_COLORS: 0
+           _R_CHECK_CRAN_INCOMING_: false
         run: |
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
       - name: Upload check results
-        if: failure() # Only upload if the check step failed
+        if: always() # Keep for debugging
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-r${{ matrix.r-version }}-check-results
-          path: check # Path to the directory containing check results
+          path: check
