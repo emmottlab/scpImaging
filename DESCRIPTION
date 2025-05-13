@@ -1,6 +1,6 @@
 Package: scpImaging
 Title: Functions for handling cellenONE-based imaging data for single-cell experiments
-Version: 0.8.0.0
+Version: 0.8.0.1
 Authors@R: 
     person("Edward", "Emmott", , "e.emmott@liverpool.ac.uk", role = c("aut", "cre"))
 Description: This package includes functions for curating, manipulating, and visualising
