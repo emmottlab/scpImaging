@@ -1,4 +1,4 @@
-### Functions for analysing cellenONE image metadata produced by Cellpose or CellProfiler
+### Functions for analysing cellenONE image metadata produced by Cellpose or Cellprofiler
 
 # Currently this includes
 # 1. countCells() - status: functional
