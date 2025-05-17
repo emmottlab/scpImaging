@@ -14,13 +14,13 @@ install_github("emmottlab/scpImaging")
 ```
 
 ## General use cases:
-This R package has functions for cropping cellenONE images based on the instrument metadata to allow for straightforward downstream processing in cellpose. It has functions to allow generation of masked images highlighting identified cells or cell outlines.
+This R package has functions for cropping cellenONE images based on the instrument metadata to allow for straightforward downstream processing in Cellpose. It has functions to allow generation of masked images highlighting identified cells or cell outlines.
 
-It also has functions for calculating cell numbers isolated from cellpose mask files (i.e. singlet/doublet/multiplet detection) and incorporating this into dataframes or QFeatures objects. It can also produce a report, for use cases that cover cell line development. 
+It also has functions for calculating cell numbers isolated from Cellpose mask files (i.e. singlet/doublet/multiplet detection) and incorporating this into dataframes or QFeatures objects. These mask files can be used in Cellprofiler workflows for additional cell phenotyping which can be incorporated into Cell metadata.
 
 Lastly the package includes a custom iSEE panel class, to permit visualisation of cellenONE images as part of interactive single-cell experiment data exploration using the iSEE package.
 
-The package has been designed to work with the [`scp`](https://www.bioconductor.org/packages/release/bioc/html/scp.html) and [`iSEE`](https://bioconductor.org/packages/release/bioc/html/iSEE.html) packages and most use cases will be in conjunction with these packages.
+The package has been designed to work with the [`scp`](https://www.bioconductor.org/packages/release/bioc/html/scp.html) and [`iSEE`](https://bioconductor.org/packages/release/bioc/html/iSEE.html) packages and most use cases will be in conjunction with these packages. However, this package does not require downstream workflows to employ SCP, and can be employed as part of QC for any cellenONE-based workflow incorporating cell dispensing, from single-cell omics to cell-line development. 
 
 ## Vignettes
 On their way...
@@ -28,7 +28,7 @@ On their way...
 ## Citation
 
 To cite the `scpImaging` package in publications use:
-TBC. (2025) bioRxiv
+Loi, Holmes et al. (2025) bioRxiv (and drop Ed an email for the most up to date citation please!)
 
 While separate projects, `scpImaging` is designed to work with the `scp` and `iSEE` packages. If you use these packages in your work, please refer to the relevant citations for those packages.
 
