@@ -30,7 +30,7 @@ On their way...
 ## Citation
 
 To cite the `scpImaging` package in publications use:
-Loi, Holmes et al. (2025) bioRxiv (and drop Ed an email for the most up to date citation please!)
+Loi, Holmes et al. (2025) bioRxiv (and drop Ed an email for the most up to date citation please!), and 'this' github repository.
 
 While separate projects, `scpImaging` is designed to work with the `scp` and `iSEE` packages. If you use these packages in your work, please refer to the relevant citations for those packages.
 
