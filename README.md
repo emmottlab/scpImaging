@@ -9,6 +9,8 @@ This R package contains the R-based components of this workflow, please see the 
 
 ![scpImaging Hex Sticker](https://github.com/emmottlab/scpImaging/blob/main/sticker/scpImaging_HexSticker.png)
 
+While designed with single-cell proteomics in mind, it should be compatable with any cellenONE-based single-cell data.
+
 ## Installation
 The devtools package provides `install_github()` that enables installing packages from GitHub.
 
