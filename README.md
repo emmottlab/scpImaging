@@ -7,6 +7,8 @@ Package for curation, analysis and visualisation of cellenONE-based microscopy d
 
 This R package contains the R-based components of this workflow, please see the `Loi, Holmes et al. (2025) bioRxiv` preprint for details downloading the pre-trained Cellpose-SAM model for segmenting cellenONE images, or drag-and-drop cellprofiler workflow for cell phenotyping.
 
+![scpImaging Hex Sticker](https://github.com/emmottlab/scpImaging/blob/main/sticker/scpImaging_HexSticker.png)
+
 ## Installation
 The devtools package provides `install_github()` that enables installing packages from GitHub.
 
