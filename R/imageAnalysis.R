@@ -24,7 +24,7 @@
 #'
 #' Because `magick::image_info` may not reliably return the bit depth for all
 #' PNG files, this function uses the `expected_bit_depth` argument to interpret
-#' the raw pixel data (bytes):
+#' the pixel data (bytes):
 #' - If `expected_bit_depth` is 8, raw bytes directly represent integer values (0-255).
 #' - If `expected_bit_depth` is 16, pairs of raw bytes are combined to reconstruct the
 #'   16-bit integer values (0-65535), assuming big-endian byte order.
@@ -172,7 +172,7 @@ countCells <- function(path = NULL, filelist = NULL, suffix = "_cp_masks.png", e
     file_base_name <- basename(file_path)
 
     count <- tryCatch({
-      # Check file existence before attempting to read with magick
+      # Check file exists
       if (!file.exists(file_path)) {
         stop("File not found.")
       }
@@ -201,22 +201,17 @@ countCells <- function(path = NULL, filelist = NULL, suffix = "_cp_masks.png", e
       # Convert raw data to integer vector based on EXPECTED depth
       img_int_vec <- NULL # Initialize
       if (expected_bit_depth == 8) {
-        # Raw bytes directly represent 8-bit integers
-        # Check length consistency
         expected_len_8bit <- as.numeric(width) * as.numeric(height) # Ensure numeric calculation
         if (length(img_raw)!= expected_len_8bit) {
           stop(paste("Raw data length", length(img_raw), "mismatch for 8-bit image. Expected", expected_len_8bit))
         }
         img_int_vec <- as.integer(img_raw)
       } else if (expected_bit_depth == 16) {
-        # Raw bytes need to be combined for 16-bit integers
-        # Check length consistency (2 bytes per pixel)
         expected_len_16bit_raw <- as.numeric(width) * as.numeric(height) * 2 # Ensure numeric calculation
         if (length(img_raw)!= expected_len_16bit_raw) {
           stop(paste("Raw data length", length(img_raw), "mismatch for 16-bit image. Expected", expected_len_16bit_raw))
         }
         raw_bytes <- as.vector(img_raw)
-        # Read 16-bit unsigned integers, assuming big-endian (network byte order common in PNG)
         expected_pixels_16bit <- as.numeric(width) * as.numeric(height) # Ensure numeric calculation
         img_int_vec <- readBin(raw_bytes, what = "integer", size = 2, n = expected_pixels_16bit, signed = FALSE, endian = "big")
       } else {
@@ -250,15 +245,16 @@ countCells <- function(path = NULL, filelist = NULL, suffix = "_cp_masks.png", e
     }, error = function(e) {
       warning(paste("Failed to process file:", file_base_name, "- Error:", conditionMessage(e)), call. = FALSE)
       return(NA_integer_) # Return NA for the count on error
-    }) # end tryCatch
+    })
 
     results_list[[i]] <- count
-  } # end for loop
+  }
 
   # --- Format Output ---
   output_df <- data.frame(
-    FileName = names(results_list),
-    CP_CellCount = unlist(results_list),
+#    FileName = names(results_list),
+        CP_Mask = names(results_list), # Changed to CP_Mask for ease of downstream processing/consistency.
+        CP_CellCount = unlist(results_list),
     row.names = NULL # Ensure row names are default integers
   )
 
@@ -617,7 +613,6 @@ addCellProfilerAttributesSCE <- function(sce_obj,
   }
 
   # --- Prepare new colData and update object ---
-  # Convert back to DataFrame, ensuring original row names are preserved/reinstated
   new_coldata <- S4Vectors::DataFrame(merged_df, row.names = original_rownames)
 
   # Replace the colData in the original object

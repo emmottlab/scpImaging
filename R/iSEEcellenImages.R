@@ -1,6 +1,6 @@
 ### iSEE custom panel class for cellenONE image visualization (requires iSEE)
 
-# Status - panel functional in scpViz, needs adapting to work in package.
+# Status - panel functional!
 # Default usage (assumes colData has "ImageFile", "Background", etc.)
 #panel <- CellenONEPlot()
 
@@ -504,7 +504,6 @@ setMethod(".generateOutput", "CellenONEPlot",
             } else {
               EjB <- PDCOff; SdB <- PDCOff; CType <- "N/A"
             }
-            # --- End Robust calculations ---
 
             current_image_dir <- slot(x, "ImageDir")
 
@@ -544,7 +543,7 @@ setMethod(".renderOutput", "CellenONEPlot",
           function(x, se, output, pObjects, rObjects) {
 
             plot_name <- .getEncodedName(x)
-            force(se) # defensive programming to avoid bugs due to delayed evaluation
+            force(se)
 
             output[[plot_name]] <- renderPlot({
               .retrieveOutput(plot_name, se, pObjects, rObjects)
@@ -604,7 +603,6 @@ setMethod(".definePanelTour", "CellenONEPlot", function(x) {
   )
 
   # Step 2: Introduce the Data Parameters collapsible box
-  # Using iSEE:::.addTourStep which correctly forms the element ID for the box opener
   all_steps_list[[length(all_steps_list) + 1]] <- iSEE:::.addTourStep(
     x,
     iSEE:::.dataParamBoxOpen, # This constant holds "DataBoxOpen"

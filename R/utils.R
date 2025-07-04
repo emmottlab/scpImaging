@@ -9,9 +9,7 @@
 #'
 #' @description
 #' Takes an input data frame and adds new columns containing derived filenames
-#' based on a specified source column. The derivation follows configurable
-#' prefix and suffix rules, primarily designed for managing related image files
-#' (e.g., cropped images, masks, overlays) in bioinformatics workflows.
+#' based on a specified source column (e.g., cropped images, masks, overlays) .
 #'
 #' @param data A `data.frame` or `tibble` containing the source image file information.
 #' @param source_column Character string. The name of the column in `data` that
@@ -30,7 +28,8 @@
 #' The function iterates through a set of predefined or user-provided configurations
 #' to generate new columns. Each configuration specifies the new column's name,
 #' an optional prefix to prepend to the source filename's base name (preserving path and extension),
-#' and an optional suffix rule applied before the original extension.
+#' and an optional suffix rule applied before the original extension. Used to generate
+#' the processed filenames in scpImaging workflows.
 #'
 #' Default Configurations:
 #' * **Cropped**: Adds column "Cropped" with prefix "cropped_" applied to the base filename.
@@ -129,7 +128,6 @@ generateImageColumns <- function(data,
   }
   if (!is.character(data[[source_column]]) &&!is.factor(data[[source_column]])) {
     warning(paste0("Source column '", source_column, "' is not character or factor. Coercing to character."), call. = FALSE)
-    # Coercion happens explicitly below
   }
 
   # Validate column_configs structure if provided
@@ -167,7 +165,6 @@ generateImageColumns <- function(data,
     }
   }
 
-
   # --- Generate Columns ---
   source_values <- as.character(data[[source_column]]) # Ensure character
   new_cols_data <- list()
@@ -179,7 +176,7 @@ generateImageColumns <- function(data,
     prefix <- config$prefix
     suffix_rule <- config$suffix
 
-    # Initialize with source values for this iteration
+    # Initialize with source valuen
     current_col_values <- source_values
     is_na_source <- is.na(source_values)
 
@@ -195,14 +192,14 @@ generateImageColumns <- function(data,
       basenames_noext <- stringr::str_c(prefix, basenames_noext)
     }
 
-    # Apply suffix rule (append before extension, unless it's a replace rule)
+    # Apply suffix rule
     is_replace_rule <-!is.na(suffix_rule) && stringr::str_detect(suffix_rule, "^replace ")
 
     if (!is_replace_rule &&!is.na(suffix_rule) && nzchar(suffix_rule)) {
       basenames_noext <- stringr::str_c(basenames_noext, suffix_rule)
     }
 
-    # Reconstruct the path (without replacement rule yet)
+    # Reconstruct the path
     modified_basenames <- stringr::str_c(basenames_noext, exts_with_dot)
     current_col_values <- ifelse(paths == ".", modified_basenames, file.path(paths, modified_basenames))
     current_col_values[is_na_source] <- NA # Ensure NA propagation
@@ -244,7 +241,7 @@ generateImageColumns <- function(data,
     warning("Suffix replacement issues detected:\n- ", paste(unique_warnings, collapse="\n- "), call. = FALSE)
   }
 
-  # Add new columns to the original data frame using dplyr::mutate
+  # Add new columns to the original data frame
   if (length(new_cols_data) > 0) {
     original_names <- names(data)
     new_names <- names(new_cols_data)
@@ -252,7 +249,7 @@ generateImageColumns <- function(data,
     if (length(clashes) > 0) {
       warning(paste("New column names clash with existing columns and will overwrite them:", paste(clashes, collapse=", ")), call. = FALSE)
     }
-    # Use dynamic dots with := via list2 for compatibility and clarity
+
     data <- dplyr::mutate(data,!!!rlang::list2(!!!new_cols_data))
   }
 
@@ -284,7 +281,6 @@ generateImageColumns <- function(data,
   colData_df <- as.data.frame(current_colData)
 
   # Ensure rownames are correctly set on the data.frame if they existed
-  # as.data.frame(DataFrame) usually preserves them, but this is a safeguard.
   if (!is.null(original_rownames) && !identical(rownames(colData_df), original_rownames)) {
     if (length(original_rownames) == nrow(colData_df)) {
       rownames(colData_df) <- original_rownames
@@ -316,7 +312,6 @@ generateImageColumns <- function(data,
     final_rownames <- original_rownames # Prioritize original sample order
   }
 
-
   SummarizedExperiment::colData(x) <- S4Vectors::DataFrame(modified_colData_df, row.names = final_rownames)
   return(x)
 }
@@ -340,7 +335,7 @@ generateImageColumns <- function(data,
 #'   and \code{column_configs}.
 #'
 #' @details
-#' This function serves as a convenient wrapper. The method for \code{SummarizedExperiment}
+#' This function serves as a wrapper. The method for \code{SummarizedExperiment}
 #' also handles \code{SingleCellExperiment} objects due to class inheritance.
 #' For \code{QFeatures} objects, this function modifies the primary (global) \code{colData}
 #' of the \code{QFeatures} object.
