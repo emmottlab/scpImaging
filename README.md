@@ -39,7 +39,7 @@ Loi, Holmes et al. (2025) bioRxiv (and drop Ed an email for the most up to date 
 While separate projects, `scpImaging` is designed to work with the `scp` and `iSEE` packages. If you use these packages in your work, please refer to the relevant citations for those packages.
 
 ## License
-(c) 2025, Ed Emmott, University of Liverpool, UK emmottlab.org. MIT Licence.
+(c) 2025, Ed Emmott, University of Liverpool, UK [emmottlab.org](https://emmottlab.org). MIT Licence.
 
 ## Asking for help
 Please use [Github
