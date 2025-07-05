@@ -493,7 +493,7 @@ addCellProfilerAttributes <- function(df1,
 #' @param df2 The secondary data frame (data.frame or tibble) containing the
 #'   attributes to add. Passed directly to `addCellProfilerAttributes`.
 #' @param key1_col The name of the key column *in the `colData` of `sce_obj`*
-#'   (character string). Defaults to `"Cropped_Path"`. Passed to
+#'   (character string). Defaults to `"Cropped"`. Passed to
 #'   `addCellProfilerAttributes`.
 #' @param key2_col The name of the key column in `df2` (character string).
 #'   Defaults to `"FileName_Image"`. Passed to `addCellProfilerAttributes`.
@@ -547,7 +547,7 @@ addCellProfilerAttributes <- function(df1,
 #'
 addCellProfilerAttributesSCE <- function(sce_obj,
                                          df2,
-                                         key1_col = "Cropped_Path",
+                                         key1_col = "Cropped",
                                          key2_col = "FileName_Image",
                                          multiplet_handling = c("voidmultiplets", "takemaxarea"),
                                          area_col = "AreaShape_Area") {
