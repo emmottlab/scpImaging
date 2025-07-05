@@ -5,7 +5,7 @@
 # scpImaging
 Package for curation, analysis and visualisation of cellenONE-based microscopy data, for example in single-cell proteomics experiments. This package offers capabilities to integrate with cellpose and cellprofiler workflows, enabling multiplet detection and cell phenotyping.
 
-This R package contains the R-based components of this workflow, please see the `Loi, Holmes et al. (2025) bioRxiv` preprint for details downloading the pre-trained Cellpose-SAM model for segmenting cellenONE images, or drag-and-drop cellprofiler workflow for cell phenotyping.
+This R package contains the R-based components of this workflow, please see the (coming soon!)`Loi, Holmes et al. (2025) bioRxiv` preprint for details downloading the pre-trained Cellpose-SAM model for segmenting cellenONE images, or drag-and-drop cellprofiler workflow for cell phenotyping.
 
 ![scpImaging Hex Sticker](https://github.com/emmottlab/scpImaging/blob/main/sticker/scpImaging_HexSticker.png)
 
@@ -39,7 +39,7 @@ Loi, Holmes et al. (2025) bioRxiv (and drop Ed an email for the most up to date 
 While separate projects, `scpImaging` is designed to work with the `scp` and `iSEE` packages. If you use these packages in your work, please refer to the relevant citations for those packages.
 
 ## License
-(c) 2025, Ed Emmott, University of Liverpool, UK emmottlab.org. MIT Licence.
+(c) 2025, Ed Emmott, University of Liverpool, UK [emmottlab.org](https://emmottlab.org). MIT Licence.
 
 ## Asking for help
 Please use [Github
