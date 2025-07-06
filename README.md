@@ -31,6 +31,9 @@ The package has been designed to work with the [`scp`](https://www.bioconductor.
 ## Vignettes
 Please read: [The scpImaging vignette](https://emmottlab.github.io/scpImaging/scpImaging.html) for a overview of the package and its workflows.
 
+## CP-SAM trained model and Cellprofiler workflow availability
+Ahead of preprinting, these can be found at this dropbox link: [https://www.dropbox.com/t/rzk7W00pMCTUgXsd](https://www.dropbox.com/t/rzk7W00pMCTUgXsd)
+
 ## Citation
 
 To cite the `scpImaging` package in publications use:
