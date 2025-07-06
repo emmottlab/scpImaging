@@ -29,12 +29,12 @@ Lastly the package includes a custom iSEE panel class, to permit visualisation o
 The package has been designed to work with the [`scp`](https://www.bioconductor.org/packages/release/bioc/html/scp.html) and [`iSEE`](https://bioconductor.org/packages/release/bioc/html/iSEE.html) packages and most use cases will be in conjunction with these packages. However, this package does not require downstream workflows to employ SCP, and can be employed as part of QC for any cellenONE-based workflow incorporating cell dispensing, from single-cell omics to cell-line development. 
 
 ## Vignettes
-On their way...
+Please read: [The scpImaging vignette](vignettes/scpImaging - general use vignette.html) for a overview of the package and its workflows.
 
 ## Citation
 
 To cite the `scpImaging` package in publications use:
-Loi, Holmes et al. (2025) bioRxiv (and drop Ed an email for the most up to date citation please!), and 'this' github repository.
+Loi, Holmes et al. (2025) bioRxiv !coming soon! (and drop Ed an email for the most up to date citation please!), and 'this' github repository.
 
 While separate projects, `scpImaging` is designed to work with the `scp` and `iSEE` packages. If you use these packages in your work, please refer to the relevant citations for those packages.
 
