@@ -1,5 +1,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![name status badge](https://emmottlab.r-universe.dev/badges/:name)](https://emmottlab.r-universe.dev/)
+[![scpImaging status badge](https://emmottlab.r-universe.dev/scpImaging/badges/version)](https://emmottlab.r-universe.dev/scpImaging)
 
 
 # scpImaging
