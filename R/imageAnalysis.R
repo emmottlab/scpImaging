@@ -303,33 +303,7 @@ countCells <- function(path = NULL, filelist = NULL, suffix = "_cp_masks.png", e
 #'   key column (`key2_col`).
 #'
 #' @examples
-#' # --- Sample Data ---
-#' df1 <- data.frame(
-#'   ID = 1:5,
-#'   Cropped_Path = c("path/A", "path/B", "path/C", "path/D", "path/E"),
-#'   OtherData1 = rnorm(5)
-#' )
-#'
-#' df2 <- data.frame(
-#'   FileName_Image = c("path/A", "path/B", "path/B", "path/C", "path/C", "path/F"),
-#'   AttributeX = letters[1:6],
-#'   AreaShape_Area = c(100, 150, 120, 200, 250, 50),
-#'   AttributeY = LETTERS[1:6]
-#' )
-#'
-#' # --- Usage Examples ---
-#'
-#' # Example 1: Default behavior ('voidmultiplets')
-#' merged_void <- addCellProfilerAttributes(df1, df2)
-#' print(merged_void)
-#'
-#' # Example 2: Using 'takemaxarea' to resolve multiplets ## Changed value in comment
-#' # For "path/B", the row with AreaShape_Area = 150 is kept.
-#' # For "path/C", the row with AreaShape_Area = 250 is kept.
-#' merged_take_max <- addCellProfilerAttributes(df1, df2,
-#'                                         multiplet_handling = "takemaxarea") ## Changed value here
-#' print(merged_take_max)
-#'
+#' # Please see vignette
 #'
 #' @export
 #' @importFrom rlang .data
@@ -379,7 +353,6 @@ addCellProfilerAttributes <- function(df1,
     }
   }
 
-  # --- Prepare df2 based on multiplet handling strategy ---
 
   # Identify keys in df2 that appear more than once
   multiplet_keys_df2 <- df2 %>%

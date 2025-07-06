@@ -31,7 +31,7 @@ It extracts the \code{colData}, processes it, and then updates the object's
 \code{colData} with the new columns.
 }
 \details{
-This function serves as a convenient wrapper. The method for \code{SummarizedExperiment}
+This function serves as a wrapper. The method for \code{SummarizedExperiment}
 also handles \code{SingleCellExperiment} objects due to class inheritance.
 For \code{QFeatures} objects, this function modifies the primary (global) \code{colData}
 of the \code{QFeatures} object.

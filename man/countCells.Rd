@@ -7,7 +7,7 @@
 countCells(
   path = NULL,
   filelist = NULL,
-  suffix = ".png",
+  suffix = "_cp_masks.png",
   expected_bit_depth = 8
 )
 }
@@ -21,7 +21,7 @@ Mutually exclusive with \code{path}. Defaults to \code{NULL}.}
 
 \item{suffix}{A character string specifying the filename suffix (pattern)
 to match when \code{path} is provided. The pattern is matched at the end of
-the filename. Defaults to \code{".png"}. Ignored if \code{filelist} is provided.}
+the filename. Defaults to \verb{_cp_masks.png}. Ignored if \code{filelist} is provided.}
 
 \item{expected_bit_depth}{A numeric value indicating the expected bit depth
 of the original PNG mask files (typically 8 or 16). This is used to
@@ -35,8 +35,8 @@ values found in the image. Contains \code{NA} if the file could not be
 processed.}
 }
 \description{
-Processes PNG segmentation masks generated from cellpose .npy files using the
-\code{magick} package to count the number of unique positive integer values.
+Processes PNG segmentation masks generated from cellpose .npy files by
+counting the number of unique positive integer values.
 These values correspond to individual segmented objects (e.g., cells),
 while background pixels (value 0) are ignored.
 The function can handle input specified as a directory containing masks, an
@@ -49,7 +49,7 @@ channel.
 
 Because \code{magick::image_info} may not reliably return the bit depth for all
 PNG files, this function uses the \code{expected_bit_depth} argument to interpret
-the raw pixel data (bytes):
+the pixel data (bytes):
 \itemize{
 \item If \code{expected_bit_depth} is 8, raw bytes directly represent integer values (0-255).
 \item If \code{expected_bit_depth} is 16, pairs of raw bytes are combined to reconstruct the

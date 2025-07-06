@@ -7,7 +7,7 @@
 addCellProfilerAttributes(
   df1,
   df2,
-  key1_col = "Cropped_Path",
+  key1_col = "Cropped",
   key2_col = "FileName_Image",
   multiplet_handling = c("voidmultiplets", "takemaxarea"),
   area_col = "AreaShape_Area"
@@ -21,7 +21,7 @@ data frame will be kept.}
 attributes to add.}
 
 \item{key1_col}{The name of the key column in \code{df1} (character string).
-Defaults to \code{"Cropped_Path"}.}
+Defaults to \code{"Cropped"}.}
 
 \item{key2_col}{The name of the key column in \code{df2} (character string).
 Defaults to \code{"FileName_Image"}.}
@@ -62,32 +62,6 @@ identical, will take the first encountered row among those with the maximum area
 }
 }
 \examples{
-# --- Sample Data ---
-df1 <- data.frame(
-  ID = 1:5,
-  Cropped_Path = c("path/A", "path/B", "path/C", "path/D", "path/E"),
-  OtherData1 = rnorm(5)
-)
-
-df2 <- data.frame(
-  FileName_Image = c("path/A", "path/B", "path/B", "path/C", "path/C", "path/F"),
-  AttributeX = letters[1:6],
-  AreaShape_Area = c(100, 150, 120, 200, 250, 50),
-  AttributeY = LETTERS[1:6]
-)
-
-# --- Usage Examples ---
-
-# Example 1: Default behavior ('voidmultiplets')
-merged_void <- addCellProfilerAttributes(df1, df2)
-print(merged_void)
-
-# Example 2: Using 'takemaxarea' to resolve multiplets ## Changed value in comment
-# For "path/B", the row with AreaShape_Area = 150 is kept.
-# For "path/C", the row with AreaShape_Area = 250 is kept.
-merged_take_max <- addCellProfilerAttributes(df1, df2,
-                                        multiplet_handling = "takemaxarea") ## Changed value here
-print(merged_take_max)
-
+# Please see vignette
 
 }

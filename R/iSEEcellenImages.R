@@ -244,6 +244,9 @@ NULL
 #' @slot ImageDir character. Specifies the directory prefix for all image files (e.g., "www").
 #' @export
 #' @importClassesFrom iSEE SampleAssayPlot
+#' @importFrom iSEE .defineDataInterface .fullName .panelColor .refineParameters
+#' @importFrom iSEE .singleSelectionSlots .hideInterface .defineOutput .generateOutput
+#' @importFrom iSEE .renderOutput .exportOutput .definePanelTour
 setClass("CellenONEPlot", contains='SampleAssayPlot',
          slots=c(ImageFile_Path="character",
                  Background_Path="character",

@@ -27,15 +27,14 @@ The input \code{data} frame (\code{tibble}) with the newly generated columns add
 }
 \description{
 Takes an input data frame and adds new columns containing derived filenames
-based on a specified source column. The derivation follows configurable
-prefix and suffix rules, primarily designed for managing related image files
-(e.g., cropped images, masks, overlays) in bioinformatics workflows.
+based on a specified source column (e.g., cropped images, masks, overlays) .
 }
 \details{
 The function iterates through a set of predefined or user-provided configurations
 to generate new columns. Each configuration specifies the new column's name,
 an optional prefix to prepend to the source filename's base name (preserving path and extension),
-and an optional suffix rule applied before the original extension.
+and an optional suffix rule applied before the original extension. Used to generate
+the processed filenames in scpImaging workflows.
 
 Default Configurations:
 \itemize{

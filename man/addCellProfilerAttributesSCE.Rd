@@ -7,7 +7,7 @@
 addCellProfilerAttributesSCE(
   sce_obj,
   df2,
-  key1_col = "Cropped_Path",
+  key1_col = "Cropped",
   key2_col = "FileName_Image",
   multiplet_handling = c("voidmultiplets", "takemaxarea"),
   area_col = "AreaShape_Area"
@@ -21,7 +21,7 @@ addCellProfilerAttributesSCE(
 attributes to add. Passed directly to \code{addCellProfilerAttributes}.}
 
 \item{key1_col}{The name of the key column \emph{in the \code{colData} of \code{sce_obj}}
-(character string). Defaults to \code{"Cropped_Path"}. Passed to
+(character string). Defaults to \code{"Cropped"}. Passed to
 \code{addCellProfilerAttributes}.}
 
 \item{key2_col}{The name of the key column in \code{df2} (character string).
