@@ -34,8 +34,14 @@ Please read: [The scpImaging vignette](https://emmottlab.github.io/scpImaging/sc
 ## CP-SAM trained model and Cellprofiler workflow availability
 Ahead of preprinting, these can be found at this dropbox link: [https://www.dropbox.com/t/rzk7W00pMCTUgXsd](https://www.dropbox.com/t/rzk7W00pMCTUgXsd)
 
-## Citation
+## Feedback & asking for help
+Please use [Github
+issues](https://github.com/emmottlab/scpImaging/issues) or
+question or report problems with `scpImaging`. 
 
+We very much welcome feedback on scpImaging, especially while it is still in beta-testing/preprint-stage.
+
+## Citation
 To cite the `scpImaging` package in publications use:
 Loi, Holmes et al. (2025) bioRxiv !coming soon! (and drop Ed an email for the most up to date citation please!), and 'this' github repository.
 
@@ -44,10 +50,7 @@ While separate projects, `scpImaging` is designed to work with the `scp` and `iS
 ## License
 (c) 2025, Ed Emmott, University of Liverpool, UK [emmottlab.org](https://emmottlab.org). MIT Licence.
 
-## Asking for help
-Please use [Github
-issues](https://github.com/emmottlab/scpImaging/issues) or
-question or report problems with `scpImaging`. 
+
 
 
 
