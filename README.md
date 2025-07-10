@@ -14,12 +14,19 @@ This R package contains the R-based components of this workflow, please see the 
 While designed with single-cell proteomics in mind, it should be compatable with any cellenONE-based single-cell data.
 
 ## Installation
-The devtools package provides `install_github()` that enables installing packages from GitHub.
+The devtools package provides `install_github()` that enables installing packages from GitHub (compiled from source):
 
 ```r
 library(devtools)
 install_github("emmottlab/scpImaging")
 ```
+
+You can also install compiled binaries through r-universe:
+
+```r
+install.packages('scpImaging', repos = c('https://emmottlab.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
 
 ## General use cases:
 This R package has functions for cropping cellenONE images based on the instrument metadata to allow for straightforward downstream processing in Cellpose. It has functions to allow generation of masked images highlighting identified cells or cell outlines.
