@@ -2,6 +2,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![name status badge](https://emmottlab.r-universe.dev/badges/:name)](https://emmottlab.r-universe.dev/)
 [![scpImaging status badge](https://emmottlab.r-universe.dev/scpImaging/badges/version)](https://emmottlab.r-universe.dev/scpImaging)
+  [![R-CMD-check](https://github.com/emmottlab/scpImaging/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/emmottlab/scpImaging/actions/workflows/R-CMD-check.yaml)
+
 
 
 # scpImaging
